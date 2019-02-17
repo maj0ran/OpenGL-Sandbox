@@ -12,6 +12,10 @@
 const char* readShaderSource(const char* src) {
 
     FILE* f = fopen(src, "r");
+
+    if(f == nullptr) {
+        std::cout << "Error opening File: " << src << std::endl;
+    }
     fseek(f, 0, SEEK_END);
     long filesize = ftell(f);
     fseek(f, 0, SEEK_SET);
@@ -30,6 +34,7 @@ GLuint loadAndCompileShader(const char* source, GLenum shaderType, char infoLog[
 
     const char* s = readShaderSource(source);
 
+    std::cout << s << std::endl;
 
     GLuint shaderId;
     shaderId = glCreateShader(shaderType);

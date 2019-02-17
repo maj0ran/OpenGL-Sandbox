@@ -30,8 +30,8 @@ int main() {
     int shaderCompileSuccess;
     char infoLog[512];
 
-    const char* vertexShaderSource = readShaderSource("C:/Users/mrn/CLionProjects/OpenGLSandbox/shader/simple.vert");
-    const char* fragmentShaderSource = readShaderSource("C:/Users/mrn/CLionProjects/OpenGLSandbox/shader/simple.frag");
+    const char* vertexShaderSource = readShaderSource("./shader/simple.vert");
+    const char* fragmentShaderSource = readShaderSource("./shader/simple.frag");
 
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -81,8 +81,8 @@ int main() {
      *
      */
 
-    GLuint vertexShader = loadAndCompileShader("C:/Users/mrn/CLionProjects/OpenGLSandbox/shader/simple.vert", GL_VERTEX_SHADER, infoLog);
-    GLuint fragmentShader = loadAndCompileShader("C:/Users/mrn/CLionProjects/OpenGLSandbox/shader/simple.frag", GL_FRAGMENT_SHADER, infoLog);
+    GLuint vertexShader = loadAndCompileShader("shader/simple.vert", GL_VERTEX_SHADER, infoLog);
+    GLuint fragmentShader = loadAndCompileShader("shader/simple.frag", GL_FRAGMENT_SHADER, infoLog);
 
 
     GLuint shaderProgram;
