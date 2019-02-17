@@ -24,11 +24,19 @@ void processInput(GLFWwindow *window) {
     if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, true);
     }
+
+    if(glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS) {
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    }
+    if(glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS) {
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    }
+    if(glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS) {
+        glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
+    }
 }
 
-int main() {
-    char infoLog[512];
-
+GLFWwindow* initWindow() {
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -39,9 +47,16 @@ int main() {
     if(window == nullptr) {
         std::cout << "Failed to create GLFW Window" << std::endl;
         glfwTerminate();
-        return -1;
+        return nullptr;
     }
 
+    return window;
+}
+
+int main() {
+    char infoLog[512];
+
+    GLFWwindow* window = initWindow();
     glfwMakeContextCurrent(window);
 
     if(!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
@@ -50,9 +65,7 @@ int main() {
     }
 
     glViewport(0,0, 800, 600);
-
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-
 
     // VBO => Vertex Buffer Object
     GLuint VBO;
@@ -83,7 +96,6 @@ int main() {
     GLuint vertexShader = loadAndCompileShader("shader/simple.vert", GL_VERTEX_SHADER, infoLog);
     GLuint fragmentShader = loadAndCompileShader("shader/simple.frag", GL_FRAGMENT_SHADER, infoLog);
 
-
     GLuint shaderProgram;
     shaderProgram = glCreateProgram();
     glAttachShader(shaderProgram, vertexShader);
@@ -91,10 +103,6 @@ int main() {
     glLinkProgram(shaderProgram);
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
-
-
-
-
     glUseProgram(shaderProgram);
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -104,8 +112,8 @@ int main() {
 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
-    //    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+    //    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         glfwSwapBuffers(window);
         glfwPollEvents();
     }

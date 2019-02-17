@@ -13,8 +13,6 @@
 
 using namespace std;
 
-
-
 const char* readFile(const char *filepath) {
     size_t size = 0;
     char* contents = nullptr;
