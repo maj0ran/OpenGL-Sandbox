@@ -24,6 +24,15 @@ unsigned int rectangleIndices[] = {
         0, 2, 3
 };
 
-
+float two_triangles[] = {
+        // left triangle
+        -0.6f, -0.3f, 0.0f,
+        -0.3f, 0.0f, 0.0f,
+        0.0f, -0.3f, 0.0f,
+        // right triangle
+        0.0f, -0.3f, 0.0f,
+        0.3f, 0.0f, 0.0f,
+        0.6f, -0.3f, 0.0f
+};
 
 #endif //OPENGL_SANDBOX_VERTEXDATA_H

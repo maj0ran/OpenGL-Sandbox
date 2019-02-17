@@ -9,24 +9,29 @@
 #include <iostream>
 #include <memory.h>
 
-const char* readShaderSource(const char* src) {
+#include <fstream>
 
-    FILE* f = fopen(src, "r");
+using namespace std;
 
-    if(f == nullptr) {
-        std::cout << "Error opening File: " << src << std::endl;
+
+
+const char* readShaderSource(const char* filepath) {
+    fpos<mbstate_t> size = -1;
+    char* contents = nullptr;
+    ifstream file(filepath, ios::in|ios::ate);
+
+    if(!file.is_open()) {
+        cout << "Error reading file:" << filepath << std::endl;
+        return nullptr;
     }
-    fseek(f, 0, SEEK_END);
-    long filesize = ftell(f);
-    fseek(f, 0, SEEK_SET);
 
-    char *string = (char*)malloc(filesize + 1);
-    fread(string, filesize, 1, f);
-    fclose(f);
-    string[filesize] = 0;
-
-    return string;
-
+    file.seekg(0, ios::end);
+    size = file.tellg();
+    contents = new char[size];
+    file.seekg(0, ios::beg);
+    file.read(contents, size);
+    file.close();
+    return contents;
 }
 
 GLuint loadAndCompileShader(const char* source, GLenum shaderType, char infoLog[512]) {
