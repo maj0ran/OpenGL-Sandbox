@@ -27,11 +27,7 @@ void processInput(GLFWwindow *window) {
 }
 
 int main() {
-    int shaderCompileSuccess;
     char infoLog[512];
-
-    const char* vertexShaderSource = readShaderSource("./shader/simple.vert");
-    const char* fragmentShaderSource = readShaderSource("./shader/simple.frag");
 
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -68,6 +64,9 @@ int main() {
     GLuint VAO;
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
+    // Configuring the Vertex Attributes
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*) nullptr);
+    glEnableVertexAttribArray(0);
 
     // EBO => Element Buffer Object
     GLuint EBO;
@@ -94,9 +93,7 @@ int main() {
     glDeleteShader(fragmentShader);
 
 
-    // Configuring the Vertex Attributes
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*) nullptr);
-    glEnableVertexAttribArray(0);
+
 
     glUseProgram(shaderProgram);
 

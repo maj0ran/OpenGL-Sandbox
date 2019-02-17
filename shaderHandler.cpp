@@ -15,10 +15,10 @@ using namespace std;
 
 
 
-const char* readShaderSource(const char* filepath) {
-    fpos<mbstate_t> size = -1;
+const char* readFile(const char *filepath) {
+    size_t size = 0;
     char* contents = nullptr;
-    ifstream file(filepath, ios::in|ios::ate);
+    ifstream file(filepath, ios::in|ios::binary|ios::ate);
 
     if(!file.is_open()) {
         cout << "Error reading file:" << filepath << std::endl;
@@ -26,18 +26,19 @@ const char* readShaderSource(const char* filepath) {
     }
 
     file.seekg(0, ios::end);
-    size = file.tellg();
-    contents = new char[size];
+    size = (size_t)file.tellg();
+    contents = new char[size + 1];
+    contents[size] = '\0';
     file.seekg(0, ios::beg);
     file.read(contents, size);
     file.close();
     return contents;
 }
 
-GLuint loadAndCompileShader(const char* source, GLenum shaderType, char infoLog[512]) {
+GLuint loadAndCompileShader(const char* filepath, GLenum shaderType, char infoLog[512]) {
     int shaderCompileSuccess;
 
-    const char* s = readShaderSource(source);
+    const char* s = readFile(filepath);
 
     std::cout << s << std::endl;
 
