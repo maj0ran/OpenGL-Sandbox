@@ -8,7 +8,8 @@ set(SOURCES main.cpp glad.c shaderHandler.cpp shaderHandler.h)
 add_executable(OpenGLSandbox ${SOURCES})
 
 find_library(GLFW NAMES libglfw3 PATHS lib)
-
 target_link_libraries(OpenGLSandbox ${GLFW})
 
-file(COPY shader DESTINATION .)
+add_custom_command(TARGET OpenGLSandbox PRE_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_SOURCE_DIR}/shader $<TARGET_FILE_DIR:OpenGLSandbox>/shader)

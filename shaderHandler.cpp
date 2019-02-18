@@ -36,13 +36,13 @@ const char* readFile(const char *filepath) {
 GLuint loadAndCompileShader(const char* filepath, GLenum shaderType, char infoLog[512]) {
     int shaderCompileSuccess;
 
-    const char* s = readFile(filepath);
+    const char* shaderSource = readFile(filepath);
 
-    std::cout << s << std::endl;
+    std::cout << shaderSource << std::endl;
 
     GLuint shaderId;
     shaderId = glCreateShader(shaderType);
-    glShaderSource(shaderId, 1, &s, nullptr);
+    glShaderSource(shaderId, 1, &shaderSource, nullptr);
     glCompileShader(shaderId);
     glGetShaderiv(shaderId, GL_COMPILE_STATUS, &shaderCompileSuccess);
     if(!shaderCompileSuccess) {

@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cmath>
 #include "include/glad/glad.h"
 #include "include/GLFW/glfw3.h"
 #include "shaderHandler.h"
@@ -67,19 +68,32 @@ int main() {
     glViewport(0,0, 800, 600);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
-    // VBO => Vertex Buffer Object
-    GLuint VBO;
-    glGenBuffers(1, &VBO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
+    int nrAttributes;
+    glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nrAttributes);
+    std::cout << nrAttributes << std::endl;
     // VAO => Vertex Array Object
-    GLuint VAO;
-    glGenVertexArrays(1, &VAO);
-    glBindVertexArray(VAO);
-    // Configuring the Vertex Attributes
+    GLuint leftTriangle_vao;
+    glGenVertexArrays(1, &leftTriangle_vao);
+    glBindVertexArray(leftTriangle_vao);
+    // VBO => Vertex Buffer Object
+    GLuint leftTriangle;
+    glGenBuffers(1, &leftTriangle);
+    glBindBuffer(GL_ARRAY_BUFFER, leftTriangle);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(firstTriangle), firstTriangle, GL_STATIC_DRAW);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*) nullptr);
     glEnableVertexAttribArray(0);
+
+
+    GLuint rightTriangle_vao;
+    glGenVertexArrays(1, &rightTriangle_vao);
+    glBindVertexArray(rightTriangle_vao);
+    GLuint rightTriangle;
+    glGenBuffers(1, &rightTriangle);
+    glBindBuffer(GL_ARRAY_BUFFER, rightTriangle);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(secondTriangle), secondTriangle, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*) nullptr);
+    glEnableVertexAttribArray(0);
+
 
     // EBO => Element Buffer Object
     GLuint EBO;
@@ -94,30 +108,52 @@ int main() {
      */
 
     GLuint vertexShader = loadAndCompileShader("shader/simple.vert", GL_VERTEX_SHADER, infoLog);
-    GLuint fragmentShader = loadAndCompileShader("shader/red.frag", GL_FRAGMENT_SHADER, infoLog);
+    GLuint fragmentShader_red = loadAndCompileShader("shader/red.frag", GL_FRAGMENT_SHADER, infoLog);
 
-    GLuint shaderProgram;
-    shaderProgram = glCreateProgram();
-    glAttachShader(shaderProgram, vertexShader);
-    glAttachShader(shaderProgram, fragmentShader);
-    glLinkProgram(shaderProgram);
+    GLuint shaderProgram_red;
+    shaderProgram_red = glCreateProgram();
+    glAttachShader(shaderProgram_red, vertexShader);
+    glAttachShader(shaderProgram_red, fragmentShader_red);
+    glLinkProgram(shaderProgram_red);
+
+    glDeleteShader(fragmentShader_red);
+    glUseProgram(shaderProgram_red);
+
+    GLuint fragmentShader_yellow = loadAndCompileShader("shader/yellow.frag", GL_FRAGMENT_SHADER, infoLog);
+
+    GLuint shaderProgram_yellow;
+    shaderProgram_yellow = glCreateProgram();
+    glAttachShader(shaderProgram_yellow, vertexShader);
+    glAttachShader(shaderProgram_yellow, fragmentShader_yellow);
+    glLinkProgram(shaderProgram_yellow);
+    glDeleteShader(fragmentShader_yellow);
+
     glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
-    glUseProgram(shaderProgram);
 
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
 
     while(!glfwWindowShouldClose(window)) {
         processInput(window);
-
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        glClearColor(0.2f, 0.3f, 0.4f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
-        glDrawArrays(GL_TRIANGLES, 0, 6);
+
+        glUseProgram(shaderProgram_red);
+        glBindVertexArray(leftTriangle_vao);
+
+        float timeValue = glfwGetTime();
+        float colorValue = (sin(timeValue) / 2.0f) + 0.5f;
+        GLint vertexColorLocation = glGetUniformLocation(shaderProgram_red, "ourColor");
+        glUniform4f(vertexColorLocation, 0.0f, colorValue, 0.0f, 1.0f);
+
+        glDrawArrays(GL_TRIANGLES, 0, 3);
+
+        glUseProgram(shaderProgram_yellow);
+        glBindVertexArray(rightTriangle_vao);
+        glDrawArrays(GL_TRIANGLES, 0, 3);
     //    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         glfwSwapBuffers(window);
         glfwPollEvents();
-        glBindBuffer(GL_ARRAY_BUFFER, VBO);
-        glEnableVertexAttribArray(0);
+
     }
 
     glfwTerminate();
