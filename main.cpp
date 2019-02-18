@@ -26,23 +26,23 @@ void processInput(GLFWwindow *window) {
     }
 
     if(glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS) {
-        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     }
     if(glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS) {
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     }
     if(glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS) {
         glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
     }
 }
 
-GLFWwindow* initWindow() {
+GLFWwindow* initWindow(const char* windowTitle) {
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    GLFWwindow* window = glfwCreateWindow(800, 600, "LearnOpenGL", nullptr, nullptr);
+    GLFWwindow* window = glfwCreateWindow(800, 600, windowTitle, nullptr, nullptr);
 
     if(window == nullptr) {
         std::cout << "Failed to create GLFW Window" << std::endl;
@@ -56,7 +56,7 @@ GLFWwindow* initWindow() {
 int main() {
     char infoLog[512];
 
-    GLFWwindow* window = initWindow();
+    GLFWwindow* window = initWindow("OpenGL-Sandbox");
     glfwMakeContextCurrent(window);
 
     if(!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
@@ -94,7 +94,7 @@ int main() {
      */
 
     GLuint vertexShader = loadAndCompileShader("shader/simple.vert", GL_VERTEX_SHADER, infoLog);
-    GLuint fragmentShader = loadAndCompileShader("shader/simple.frag", GL_FRAGMENT_SHADER, infoLog);
+    GLuint fragmentShader = loadAndCompileShader("shader/red.frag", GL_FRAGMENT_SHADER, infoLog);
 
     GLuint shaderProgram;
     shaderProgram = glCreateProgram();
@@ -116,6 +116,8 @@ int main() {
     //    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         glfwSwapBuffers(window);
         glfwPollEvents();
+        glBindBuffer(GL_ARRAY_BUFFER, VBO);
+        glEnableVertexAttribArray(0);
     }
 
     glfwTerminate();

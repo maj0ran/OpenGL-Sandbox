@@ -35,4 +35,16 @@ float two_triangles[] = {
         0.6f, -0.3f, 0.0f
 };
 
+float firstTriangle[] = {
+        -0.6f, -0.3f, 0.0f,
+        -0.3f, 0.0f, 0.0f,
+        0.0f, -0.3f, 0.0f,
+};
+
+float secondTriangle[] = {
+        0.0f, -0.3f, 0.0f,
+        0.3f, 0.0f, 0.0f,
+        0.6f, -0.3f, 0.0f
+};
+
 #endif //OPENGL_SANDBOX_VERTEXDATA_H
