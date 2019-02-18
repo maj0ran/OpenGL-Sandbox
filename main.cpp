@@ -111,29 +111,8 @@ int main() {
      *
      */
 
-    GLuint vertexShader = loadAndCompileShader("shader/simple.vert", GL_VERTEX_SHADER, infoLog);
-    GLuint fragmentShader_red = loadAndCompileShader("shader/red.frag", GL_FRAGMENT_SHADER, infoLog);
-
-    GLuint shaderProgram_red;
-    shaderProgram_red = glCreateProgram();
-    glAttachShader(shaderProgram_red, vertexShader);
-    glAttachShader(shaderProgram_red, fragmentShader_red);
-    glLinkProgram(shaderProgram_red);
-
-    glDeleteShader(fragmentShader_red);
-    glUseProgram(shaderProgram_red);
-
-    GLuint fragmentShader_yellow = loadAndCompileShader("shader/yellow.frag", GL_FRAGMENT_SHADER, infoLog);
-
-    GLuint shaderProgram_yellow;
-    shaderProgram_yellow = glCreateProgram();
-    glAttachShader(shaderProgram_yellow, vertexShader);
-    glAttachShader(shaderProgram_yellow, fragmentShader_yellow);
-    glLinkProgram(shaderProgram_yellow);
-    glDeleteShader(fragmentShader_yellow);
-
-    glDeleteShader(vertexShader);
-
+    Shader* firstTriangle = new Shader("shader/simple.vert", "shader/red.frag");
+    Shader* secondTriangle = new Shader("shader/simple.vert", "shader/yellow.frag");
 
 
     while(!glfwWindowShouldClose(window)) {
@@ -141,23 +120,23 @@ int main() {
         glClearColor(0.2f, 0.3f, 0.4f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        glUseProgram(shaderProgram_red);
+  //      glUseProgram(shaderProgram_red);
+        firstTriangle->use();
         glBindVertexArray(leftTriangle_vao);
 
         float timeValue = glfwGetTime();
         float colorValue = (sin(timeValue) / 2.0f) + 0.5f;
-        GLint vertexColorLocation = glGetUniformLocation(shaderProgram_red, "ourColor");
-        glUniform4f(vertexColorLocation, 0.0f, colorValue, 0.0f, 1.0f);
+        GLint vertexColorLocation = glGetUniformLocation(firstTriangle->id, "ourColor");
+        glUniform4f(vertexColorLocation, 1.0 - colorValue, colorValue, 0.0f, 1.0f);
 
         glDrawArrays(GL_TRIANGLES, 0, 3);
-
-        glUseProgram(shaderProgram_yellow);
+        secondTriangle->use();
+    //    glUseProgram(shaderProgram_yellow);
         glBindVertexArray(rightTriangle_vao);
         glDrawArrays(GL_TRIANGLES, 0, 3);
     //    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         glfwSwapBuffers(window);
         glfwPollEvents();
-
     }
 
     glfwTerminate();
