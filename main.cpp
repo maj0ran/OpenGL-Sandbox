@@ -71,6 +71,8 @@ int main() {
     int nrAttributes;
     glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nrAttributes);
     std::cout << nrAttributes << std::endl;
+
+
     // VAO => Vertex Array Object
     GLuint leftTriangle_vao;
     glGenVertexArrays(1, &leftTriangle_vao);
@@ -91,8 +93,10 @@ int main() {
     glGenBuffers(1, &rightTriangle);
     glBindBuffer(GL_ARRAY_BUFFER, rightTriangle);
     glBufferData(GL_ARRAY_BUFFER, sizeof(secondTriangle), secondTriangle, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*) nullptr);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*) nullptr);
     glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3*sizeof(float)));
+    glEnableVertexAttribArray(1);
 
 
     // EBO => Element Buffer Object

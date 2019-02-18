@@ -42,9 +42,10 @@ float firstTriangle[] = {
 };
 
 float secondTriangle[] = {
-        0.0f, -0.3f, 0.0f,
-        0.3f, 0.0f, 0.0f,
-        0.6f, -0.3f, 0.0f
+        // position             // color
+        0.0f, -0.3f, 0.0f,      1.0f, 0.0f, 0.0f,
+        0.3f, 0.0f, 0.0f,       0.0f, 1.0f, 0.0f,
+        0.6f, -0.3f, 0.0f,      0.0f, 0.0f, 1.0f
 };
 
 #endif //OPENGL_SANDBOX_VERTEXDATA_H
