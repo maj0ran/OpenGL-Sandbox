@@ -73,30 +73,57 @@ int main() {
     std::cout << nrAttributes << std::endl;
 
 
+    // Texture Loading
+    int width, height, nrChannels;
+    unsigned char *data = stbi_load("textures/wall.jpg", &width, &height, &nrChannels, 0);
+    GLuint texture;
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+    glGenerateMipmap(GL_TEXTURE_2D);
+
+    stbi_image_free(data);
+
+
     // VAO => Vertex Array Object
     GLuint leftTriangle_vao;
     glGenVertexArrays(1, &leftTriangle_vao);
     glBindVertexArray(leftTriangle_vao);
     // VBO => Vertex Buffer Object
-    GLuint leftTriangle;
-    glGenBuffers(1, &leftTriangle);
-    glBindBuffer(GL_ARRAY_BUFFER, leftTriangle);
+    GLuint leftTriangle_vbo;
+    glGenBuffers(1, &leftTriangle_vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, leftTriangle_vbo);
     glBufferData(GL_ARRAY_BUFFER, sizeof(firstTriangle), firstTriangle, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*) nullptr);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*) 0);
     glEnableVertexAttribArray(0);
 
 
     GLuint rightTriangle_vao;
     glGenVertexArrays(1, &rightTriangle_vao);
     glBindVertexArray(rightTriangle_vao);
-    GLuint rightTriangle;
-    glGenBuffers(1, &rightTriangle);
-    glBindBuffer(GL_ARRAY_BUFFER, rightTriangle);
+    GLuint rightTriangle_vbo;
+    glGenBuffers(1, &rightTriangle_vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, rightTriangle_vbo);
     glBufferData(GL_ARRAY_BUFFER, sizeof(secondTriangle), secondTriangle, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*) nullptr);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*) 0);
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3*sizeof(float)));
     glEnableVertexAttribArray(1);
+
+    GLuint upperTriangle_vao;
+    glGenVertexArrays(1, &upperTriangle_vao);
+    glBindVertexArray(upperTriangle_vao);
+    GLuint upperTriangle_vbo;
+    glGenBuffers(1, &upperTriangle_vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, upperTriangle_vbo);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(thirdTriangle), thirdTriangle, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
+    glEnableVertexAttribArray(2);
+
 
 
     // EBO => Element Buffer Object
@@ -111,30 +138,39 @@ int main() {
      *
      */
 
-    Shader* firstTriangle = new Shader("shader/simple.vert", "shader/red.frag");
-    Shader* secondTriangle = new Shader("shader/simple.vert", "shader/yellow.frag");
+    Shader* firstTriangle = new Shader("shader/simple.vert", "shader/uniformColor.frag");
+    Shader* secondTriangle = new Shader("shader/simple.vert", "shader/inputColor.frag");
+    Shader* thirdTriangle = new Shader("shader/texture.vert", "shader/texture.frag");
 
+    firstTriangle->use();
+    GLint vertexOffsetLocation = glGetUniformLocation(firstTriangle->id, "offset");
+//    glUniform1f(vertexOffsetLocation, -0.2f);
+
+ //   glBindTexture
 
     while(!glfwWindowShouldClose(window)) {
         processInput(window);
         glClearColor(0.2f, 0.3f, 0.4f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-  //      glUseProgram(shaderProgram_red);
+
         firstTriangle->use();
         glBindVertexArray(leftTriangle_vao);
 
         float timeValue = glfwGetTime();
         float colorValue = (sin(timeValue) / 2.0f) + 0.5f;
         GLint vertexColorLocation = glGetUniformLocation(firstTriangle->id, "ourColor");
-        glUniform4f(vertexColorLocation, 1.0 - colorValue, colorValue, 0.0f, 1.0f);
+        glUniform4f(vertexColorLocation, 1.0 - colorValue, colorValue, 1.0 - colorValue, 1.0f);
 
         glDrawArrays(GL_TRIANGLES, 0, 3);
         secondTriangle->use();
-    //    glUseProgram(shaderProgram_yellow);
         glBindVertexArray(rightTriangle_vao);
         glDrawArrays(GL_TRIANGLES, 0, 3);
     //    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+        thirdTriangle->use();
+        glBindVertexArray(upperTriangle_vao);
+        glDrawArrays(GL_TRIANGLES, 0, 3);
         glfwSwapBuffers(window);
         glfwPollEvents();
     }

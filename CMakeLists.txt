@@ -11,3 +11,4 @@ find_library(GLFW NAMES libglfw3 PATHS lib)
 target_link_libraries(OpenGLSandbox ${GLFW})
 
 add_custom_command(TARGET OpenGLSandbox PRE_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/shader $<TARGET_FILE_DIR:OpenGLSandbox>/shader)
+add_custom_command(TARGET OpenGLSandbox PRE_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/textures $<TARGET_FILE_DIR:OpenGLSandbox>/textures)

@@ -48,4 +48,17 @@ float secondTriangle[] = {
         0.6f, -0.3f, 0.0f,      0.0f, 0.0f, 1.0f
 };
 
+float texCoords[] = {
+        0.0f, 0.0f,
+        0.5f, 1.0f,
+        1.0f, 0.0f
+};
+
+float thirdTriangle[] = {
+        // position             // color                // texture
+        0.4f, 0.8f, 0.0f,       1.0f, 0.0f, 0.0f,       0.0f, 0.0f,
+        -0.4f, 0.8f, 0.0f,      0.0f, 1.0f, 0.0f,       0.5f, 1.0f,
+        0.0f, 0.0f, 0.0f,       0.0f, 0.0f, 1.0f,       1.0f, 0.0f
+};
+
 #endif //OPENGL_SANDBOX_VERTEXDATA_H
