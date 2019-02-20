@@ -58,13 +58,12 @@ int main() {
     char infoLog[512];
 
     glm::vec4 vec(1.0f, 0.0f, 0.0f, 1.0f);
-    glm::mat4 trans = glm::mat4(1.0f);
 
-    trans = glm::translate(trans, glm::vec3(1.0f, 1.0f, 0.0f));
+    glm::mat4 trans = glm::mat4(1.0f);
+    trans = glm::rotate(trans, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0));
+ //   trans = glm::translate(trans, glm::vec3(1.0f, 1.0f, 0.0f));
 
     vec = trans * vec;
-
-    std::cout << vec.x << vec.y << vec.z << std::endl;
 
     GLFWwindow* window = initWindow("OpenGL-Sandbox");
     glfwMakeContextCurrent(window);
@@ -157,11 +156,14 @@ int main() {
 
  //   glBindTexture
 
+    thirdTriangle->use();
+    GLint transformLocation = glGetUniformLocation(thirdTriangle->id, "transform");
+    glUniformMatrix4fv(transformLocation, 1, GL_FALSE, glm::value_ptr(trans));
+
     while(!glfwWindowShouldClose(window)) {
         processInput(window);
         glClearColor(0.2f, 0.3f, 0.4f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
-
 
         firstTriangle->use();
         glBindVertexArray(leftTriangle_vao);
@@ -178,6 +180,10 @@ int main() {
     //    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
         thirdTriangle->use();
+
+        glm::mat4 trans = glm::mat4(1.0f);
+        trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(1.0, 1.0, 1.0));
+        glUniformMatrix4fv(transformLocation, 1, GL_FALSE, glm::value_ptr(trans));
         glBindVertexArray(upperTriangle_vao);
         glDrawArrays(GL_TRIANGLES, 0, 3);
         glfwSwapBuffers(window);

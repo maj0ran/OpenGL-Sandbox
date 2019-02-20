@@ -61,4 +61,16 @@ float thirdTriangle[] = {
         0.0f, 0.0f, 0.0f,       0.0f, 0.0f, 1.0f,       1.0f, 0.0f
 };
 
+
+float cube[] = {
+        // position
+        -0.5f, -0.5f, 0.5f, // LDF
+        0.5f, -0.5f, 0.5f, // RDF
+        -0.5f, 0.5f, 0.5f, // LUF
+        0.5f, 0.5f, 0.5f, // RUF
+        -0.5f, -0.5f, -0.5f, // LDB
+        0.5f, -0.5f, -0.5f, // RDB
+        -0.5f, 0.5f, -0.5f, // LUB
+        0.5f, 0.5f, -0.5f, // RUB
+};
 #endif //OPENGL_SANDBOX_VERTEXDATA_H
