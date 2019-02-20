@@ -55,15 +55,24 @@ GLFWwindow* initWindow(const char* windowTitle) {
 }
 
 int main() {
+    int screenWidth = 800;
+    int screenHeight = 600;
     char infoLog[512];
-
-    glm::vec4 vec(1.0f, 0.0f, 0.0f, 1.0f);
 
     glm::mat4 trans = glm::mat4(1.0f);
     trans = glm::rotate(trans, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0));
  //   trans = glm::translate(trans, glm::vec3(1.0f, 1.0f, 0.0f));
 
-    vec = trans * vec;
+
+    glm::mat4 ortho = glm::ortho(0.0f, 800.f, 0.0f, 600.0f, 0.1f, 100.f);
+    glm::mat4 proj = glm::perspective(glm::radians(45.0f), (float)screenWidth/(float)screenHeight, 0.1f, 100.0f);
+
+
+    glm::mat4 model = glm::mat4(1.0f);
+    model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+
+    glm::mat4 view = glm::mat4(1.0f);
+    view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
 
     GLFWwindow* window = initWindow("OpenGL-Sandbox");
     glfwMakeContextCurrent(window);
@@ -84,6 +93,7 @@ int main() {
     // Texture Loading
     int width, height, nrChannels;
     unsigned char *data = stbi_load("textures/wall.jpg", &width, &height, &nrChannels, 0);
+    if(data == nullptr) std::cout << "bla" << std::endl;
     GLuint texture;
     glGenTextures(1, &texture);
     glBindTexture(GL_TEXTURE_2D, texture);
@@ -91,6 +101,8 @@ int main() {
     glGenerateMipmap(GL_TEXTURE_2D);
 
     stbi_image_free(data);
+
+
 
 
     // VAO => Vertex Array Object
@@ -132,6 +144,19 @@ int main() {
     glEnableVertexAttribArray(1);
     glEnableVertexAttribArray(2);
 
+    // cube
+    GLuint cube_vao;
+    glGenVertexArrays(1, &cube_vao);
+    glBindVertexArray(cube_vao);
+    GLuint cube_vbo;
+    glGenBuffers(1, &cube_vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, cube_vbo);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), cubeVertices, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
+
 
 
     // EBO => Element Buffer Object
@@ -150,42 +175,53 @@ int main() {
     Shader* secondTriangle = new Shader("shader/simple.vert", "shader/inputColor.frag");
     Shader* thirdTriangle = new Shader("shader/texture.vert", "shader/texture.frag");
 
-    firstTriangle->use();
-    GLint vertexOffsetLocation = glGetUniformLocation(firstTriangle->id, "offset");
-//    glUniform1f(vertexOffsetLocation, -0.2f);
+    Shader* cube = new Shader("shader/texture.vert", "shader/texture.frag");
+
+    cube->use();
+//    GLint vertexOffsetLocation = glGetUniformLocation(cube->id, "offset");
+    GLint modelLocation = glGetUniformLocation(cube->id, "model");
+    GLint viewLocation = glGetUniformLocation(cube->id, "view");
+    GLint projectionLocation = glGetUniformLocation(cube->id, "projection");
+
 
  //   glBindTexture
-
-    thirdTriangle->use();
-    GLint transformLocation = glGetUniformLocation(thirdTriangle->id, "transform");
-    glUniformMatrix4fv(transformLocation, 1, GL_FALSE, glm::value_ptr(trans));
-
+    glEnable(GL_DEPTH_TEST);
     while(!glfwWindowShouldClose(window)) {
         processInput(window);
         glClearColor(0.2f, 0.3f, 0.4f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        firstTriangle->use();
-        glBindVertexArray(leftTriangle_vao);
+//        firstTriangle->use();
+//        glBindVertexArray(leftTriangle_vao);
 
-        float timeValue = glfwGetTime();
-        float colorValue = (sin(timeValue) / 2.0f) + 0.5f;
-        GLint vertexColorLocation = glGetUniformLocation(firstTriangle->id, "ourColor");
-        glUniform4f(vertexColorLocation, 1.0 - colorValue, colorValue, 1.0 - colorValue, 1.0f);
+//
+//
+//        float timeValue = glfwGetTime();
+//        float colorValue = (sin(timeValue) / 2.0f) + 0.5f;
+//        GLint vertexColorLocation = glGetUniformLocation(firstTriangle->id, "ourColor");
+//        glUniform4f(vertexColorLocation, 1.0 - colorValue, colorValue, 1.0 - colorValue, 1.0f);
+//
+//        glDrawArrays(GL_TRIANGLES, 0, 3);
+//        secondTriangle->use();
+//        glBindVertexArray(rightTriangle_vao);
+//        glDrawArrays(GL_TRIANGLES, 0, 3);
+//    //    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+//
+//        thirdTriangle->use();
+//
+//
+//        glBindVertexArray(upperTriangle_vao);
+//        glDrawArrays(GL_TRIANGLES, 0, 3);
+        float rot = (float)glfwGetTime();
+        model = glm::mat4(1.0f);
+        model = glm::rotate(model, rot, glm::vec3(0.1f, 0.3f, 0.5f));
+        cube->use();
+        glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(model));
+        glUniformMatrix4fv(viewLocation, 1, GL_FALSE, glm::value_ptr(view));
+        glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, glm::value_ptr(proj));
 
-        glDrawArrays(GL_TRIANGLES, 0, 3);
-        secondTriangle->use();
-        glBindVertexArray(rightTriangle_vao);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
-    //    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
-        thirdTriangle->use();
-
-        glm::mat4 trans = glm::mat4(1.0f);
-        trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(1.0, 1.0, 1.0));
-        glUniformMatrix4fv(transformLocation, 1, GL_FALSE, glm::value_ptr(trans));
-        glBindVertexArray(upperTriangle_vao);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        glBindVertexArray(cube_vao);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
