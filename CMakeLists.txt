@@ -4,11 +4,9 @@ project(OpenGL-Sandbox)
 set(CMAKE_CXX_STANDARD 17)
 
 set(SOURCES main.cpp
-        glad.c
-        shaderHandler.cpp
-        shaderHandler.h
-        mrn/polygon_data.h mrn/Shader.cpp mrn/Shader.h stb_image.h
-        glm/glm/glm.hpp mrn/Vertex.h polygons.cpp Gfx.cpp Gfx.h)
+        include/glad/glad.c
+        mrn/Shader.cpp mrn/Shader.h include/stb/stb_image.h
+        glm/glm/glm.hpp mrn/Vertex.h mrn/Polygon.cpp mrn/Polygon.h mrn/Model.cpp mrn/Model.h)
 
 add_executable(OpenGLSandbox ${SOURCES})
 

@@ -81,4 +81,9 @@ namespace mrn {
     void Shader::use() {
         glUseProgram(this->id);
     }
+
+    void Shader::translate() {
+        GLint proj_loc = glGetUniformLocation(id, "projection");
+        glUniformMatrix4fv(proj_loc, 1, GL_FALSE, value_ptr(proj));
+    }
 }

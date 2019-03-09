@@ -50,6 +50,8 @@ GLFWwindow* initWindow(const char* windowTitle, int width, int height) {
         glfwTerminate();
         return nullptr;
     }
+    glfwMakeContextCurrent(window);
+    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     return window;
 }
 
@@ -63,117 +65,119 @@ bool checkGlad() {
 
 int main() {
     mat4 proj = perspective(radians(45.0f), 800.0f/600.0f, 0.1f, 100.0f);
-  //  trans = scale(trans, vec3(0.1, 0.5, 0.5));
 
-    mrn::Triangle triangle_data = mrn::Triangle();
 
-    triangle_data.up.pos = vec3(0.0, 0.5, 0.0);
-    triangle_data.up.rgb = vec3(1.0, 0.0, 0.0);
+    mrn::Polygon cube_data;
 
-    triangle_data.left.pos = vec3(-0.5, -0.5, 0.0);
-    triangle_data.left.rgb = vec3(0.0, 1.0, 0.0);
+    mrn::Vertex ldf;
+    ldf.pos = vec3(-0.5, -0.5, -0.5);
+    ldf.rgb =  vec3(0.0, 0.0, 0.0);
 
-    triangle_data.right.pos = vec3(0.5, -0.5, 0.0);
-    triangle_data.right.rgb = vec3(0.0, 0.0, 1.0);
+    mrn::Vertex luf;
+    luf.pos = vec3(-0.5, 0.5, -0.5);
+    luf.rgb = vec3(0.0, 0.0, 1.0);
 
-    mrn::Cube cube_data = mrn::Cube();
+    mrn::Vertex rdf;
+    rdf.pos = vec3(0.5, -0.5, -0.5);
+    rdf.rgb = vec3(0.0, 1.0, 0.0);
 
-    cube_data.leftDownFront.pos = vec3(-0.5, -0.5, -0.5);
-    cube_data.leftDownFront.rgb = vec3(0.0, 0.0, 0.0);
+    mrn::Vertex ruf;
+    ruf.pos = vec3(0.5, 0.5, -0.5);
+    ruf.rgb = vec3(0.0, 1.0, 1.0);
 
-    cube_data.leftUpFront.pos = vec3(-0.5, 0.5, -0.5);
-    cube_data.leftUpFront.rgb = vec3(0.0, 0.0, 1.0);
+    mrn::Vertex ldb;
+    ldb.pos = vec3(-0.5, -0.5, 0.5);
+    ldb.rgb = vec3(1.0, 0.0, 0.0);
 
-    cube_data.rightDownFront.pos = vec3(0.5, -0.5, -0.5);
-    cube_data.rightDownFront.rgb = vec3(0.0, 1.0, 0.0);
+    mrn::Vertex lub;
+    lub.pos = vec3(-0.5, 0.5, 0.5);
+    lub.rgb = vec3(1.0, 0.0, 1.0);
 
-    cube_data.rightUpFront.pos = vec3(0.5, 0.5, -0.5);
-    cube_data.rightUpFront.rgb = vec3(0.0, 1.0, 1.0);
+    mrn::Vertex rdb;
+    rdb.pos = vec3(0.5, -0.5, 0.5);
+    rdb.rgb = vec3(1.0, 1.0, 0.0);
 
-    cube_data.leftDownBack.pos = vec3(-0.5, -0.5, 0.5);
-    cube_data.leftDownBack.rgb = vec3(1.0, 0.0, 0.0);
+    mrn::Vertex rub;
+    rub.pos = vec3(0.5, 0.5, 0.5);
+    rub.rgb = vec3(1.0, 1.0, 1.0);
 
-    cube_data.leftUpBack.pos = vec3(-0.5, 0.5, 0.5);
-    cube_data.leftUpBack.rgb = vec3(1.0, 0.0, 1.0);
+    cube_data.addVertex(ldf);
+    cube_data.addVertex(luf);
+    cube_data.addVertex(rdf);
+    cube_data.addVertex(ruf);
+    cube_data.addVertex(ldb);
+    cube_data.addVertex(lub);
+    cube_data.addVertex(rdb);
+    cube_data.addVertex(rub);
 
-    cube_data.rightDownBack.pos = vec3(0.5, -0.5, 0.5);
-    cube_data.rightDownBack.rgb = vec3(1.0, 1.0, 0.0);
+    // Front
+    cube_data.addTriangleIndices(0, 1, 2);
+    cube_data.addTriangleIndices(1, 2, 3);
+    // Left
+    cube_data.addTriangleIndices(0, 2, 4);
+    cube_data.addTriangleIndices(2, 4, 6);
+    // Right
+    cube_data.addTriangleIndices(1, 3, 5);
+    cube_data.addTriangleIndices(3, 5, 7);
+    // Down
+    cube_data.addTriangleIndices(0, 1, 4);
+    cube_data.addTriangleIndices(1, 4, 5);
+    // Up
+    cube_data.addTriangleIndices(2, 3, 6);
+    cube_data.addTriangleIndices(3, 6, 7);
+    // Back
+    cube_data.addTriangleIndices(4, 5, 6);
+    cube_data.addTriangleIndices(5, 6, 7);
 
-    cube_data.rightUpBack.pos = vec3(0.5, 0.5, 0.5);
-    cube_data.rightUpBack.rgb = vec3(1.0, 1.0, 1.0);
 
     GLFWwindow* window = initWindow("OpenGL-Sandbox", 800, 600);
-    glfwMakeContextCurrent(window);
-    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-
     if(!checkGlad()) return -1;
+
     glViewport(0,0, 800, 600);
-
-
-    GLuint triangle_vertex_info;
-    GLuint triangle_data_buffer;
-    glGenVertexArrays(1, &triangle_vertex_info);
-    glGenBuffers(1, &triangle_data_buffer);
-
-    glBindVertexArray(triangle_vertex_info);
-
-    glBindBuffer(GL_ARRAY_BUFFER, triangle_data_buffer);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(triangle_data), &triangle_data, GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)( 3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-    glBindVertexArray(0);
+    glPointSize(5);
+    glEnable(GL_DEPTH_TEST);
 
     GLuint cube_vertex_arrayinfo;
-    GLuint cube_vertex_buffer;
     GLuint cube_index_buffer;
     glGenVertexArrays(1, &cube_vertex_arrayinfo);
-    glGenBuffers(1, &cube_vertex_buffer);
     glGenBuffers(1, &cube_index_buffer);
 
     glBindVertexArray(cube_vertex_arrayinfo);
-
-    glBindBuffer(GL_ARRAY_BUFFER, cube_vertex_buffer);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(cube_data), &cube_data, GL_STATIC_DRAW);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, cube_index_buffer);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(mrn::cube_indices), mrn::cube_indices, GL_STATIC_DRAW);
-
+    cube_data.initBuf();
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
 
+    mrn::Shader* cube_shader = new mrn::Shader("shader/rotate.vert", "shader/default.frag");
 
-    mrn::Shader* triangle = new mrn::Shader("shader/default.vert", "shader/default.frag");
-    mrn::Shader* cube = new mrn::Shader("shader/rotate.vert", "shader/default.frag");
+    mrn::Model c1 = mrn::Model();
+    c1.data = &cube_data;
+    c1.shader = cube_shader;
 
-    GLint transform_loc = glGetUniformLocation(cube->id, "transform");
-    GLint proj_loc = glGetUniformLocation(cube->id, "proj");
-    cube->use();
+    mrn::Model c2 = mrn::Model();
+    c2.data = &cube_data;
+    c2.shader = cube_shader;
 
-    //glPointSize(10);
-    glEnable(GL_DEPTH_TEST);
+
+    GLint proj_loc = glGetUniformLocation(cube_shader->id, "projection");
+    cube_shader->use();
+
+    glUniformMatrix4fv(proj_loc, 1, GL_FALSE, value_ptr(proj));
+
     while(!glfwWindowShouldClose(window)) {
-        // transformations
-        // ---------------
-        mat4 trans = mat4(1.0f);
-        trans = translate(trans, vec3(0.0f, 0.f, -3.f));
-        trans = rotate(trans, float(glfwGetTime()), vec3(0.8, .5, 0.3));
-        glUniformMatrix4fv(transform_loc, 1, GL_FALSE, value_ptr(trans));
-        glUniformMatrix4fv(proj_loc, 1, GL_FALSE, value_ptr(proj));
         // input
-        // -----
+          // -----
         processInput(window);
         // render
         // ------
-        glClearColor(0.2f, 0.3f, 0.4f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        cube->use();
-        glBindVertexArray(cube_vertex_arrayinfo);
+        clear();
+
+        c1.translate(vec3(3.0f, 3.f, -10.f));
+        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+
+        c2.translate(vec3(-1.0f, -1.5f, -6.f));
         glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 
 
@@ -185,4 +189,9 @@ int main() {
 
     glfwTerminate();
     return 0;
+}
+
+void clear() {
+    glClearColor(0.2f, 0.3f, 0.4f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
