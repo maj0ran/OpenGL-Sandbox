@@ -7,9 +7,10 @@ out vec3 outputColor;
 
 uniform mat4 projection;
 uniform mat4 transform;
+uniform mat4 view;
 
 void main()
 {
-    gl_Position = projection * transform * vec4(vertexPos, 1.0);
+    gl_Position = projection * view * transform * vec4(vertexPos, 1.0);
     outputColor = vertexColor;
 }

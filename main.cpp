@@ -2,26 +2,46 @@
 #include <cmath>
 #include "include/glad/glad.h"
 #include "include/GLFW/glfw3.h"
-#include "shaderHandler.h"
 
 
-float vertices[] = {
-        -0.5f, -0.5f, 0.0f,
-        0.5f, -0.5f, 0.0f,
-        0.5f, 0.5f, 0.0f,
-        -0.5f, 0.5f, 0.0f
-};
+#define STB_IMAGE_IMPLEMENTATION
+#include "include/stb/stb_image.h"
 
-unsigned int indices[] = {
-        0, 1, 2,
-        0, 2, 3
-};
+/* ---- GLM ---- */
+#include "glm/glm/glm.hpp"
+#include "glm/glm/gtc/matrix_transform.hpp"
+#include "glm/glm/gtc/type_ptr.hpp"
+
+/* ---- own header ---- */
+#include "mrn/Shader.h"
+#include "mrn/Mesh.h"
+#include "mrn/Model.h"
+#include "mrn/Camera.h"
+#include "mrn/Scene.h"
+#include "mrn/Primitives.h"
+
+void clear();
+using namespace glm;
+
+int loadTexture() {
+    // Texture Loading
+    int width, height, nrChannels;
+    unsigned char *data = stbi_load("textures/wall.jpg", &width, &height, &nrChannels, 0);
+    if(data == nullptr) std::cout << "bla" << std::endl;
+    GLuint texture;
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+    glGenerateMipmap(GL_TEXTURE_2D);
+
+    return texture;
+}
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
 }
 
-void processInput(GLFWwindow *window) {
+void processInput(GLFWwindow *window, mrn::Scene* scene) {
     if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, true);
     }
@@ -34,6 +54,32 @@ void processInput(GLFWwindow *window) {
     }
     if(glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS) {
         glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
+    }
+
+    // camera control
+
+    if(glfwGetKey(window, GLFW_KEY_W)) {
+        vec3 camPos = scene->cam.getPos();
+        camPos.z = camPos.z - 0.1f;
+        scene->cam.setPos(camPos.x, camPos.y, camPos.z);
+    }
+
+    if(glfwGetKey(window, GLFW_KEY_A)) {
+        vec3 camPos = scene->cam.getPos();
+        camPos.x = camPos.x - 0.1f;
+        scene->cam.setPos(camPos.x, camPos.y, camPos.z);
+    }
+
+    if(glfwGetKey(window, GLFW_KEY_S)) {
+        vec3 camPos = scene->cam.getPos();
+        camPos.z = camPos.z + 0.1f;
+        scene->cam.setPos(camPos.x, camPos.y, camPos.z);
+    }
+
+    if(glfwGetKey(window, GLFW_KEY_D)) {
+        vec3 camPos = scene->cam.getPos();
+        camPos.x = camPos.x + 0.1f;
+        scene->cam.setPos(camPos.x, camPos.y, camPos.z);
     }
 }
 
@@ -67,67 +113,8 @@ int main() {
     mat4 proj = perspective(radians(45.0f), 800.0f/600.0f, 0.1f, 100.0f);
 
 
-    mrn::Polygon cube_data;
-
-    mrn::Vertex ldf;
-    ldf.pos = vec3(-0.5, -0.5, -0.5);
-    ldf.rgb =  vec3(0.0, 0.0, 0.0);
-
-    mrn::Vertex luf;
-    luf.pos = vec3(-0.5, 0.5, -0.5);
-    luf.rgb = vec3(0.0, 0.0, 1.0);
-
-    mrn::Vertex rdf;
-    rdf.pos = vec3(0.5, -0.5, -0.5);
-    rdf.rgb = vec3(0.0, 1.0, 0.0);
-
-    mrn::Vertex ruf;
-    ruf.pos = vec3(0.5, 0.5, -0.5);
-    ruf.rgb = vec3(0.0, 1.0, 1.0);
-
-    mrn::Vertex ldb;
-    ldb.pos = vec3(-0.5, -0.5, 0.5);
-    ldb.rgb = vec3(1.0, 0.0, 0.0);
-
-    mrn::Vertex lub;
-    lub.pos = vec3(-0.5, 0.5, 0.5);
-    lub.rgb = vec3(1.0, 0.0, 1.0);
-
-    mrn::Vertex rdb;
-    rdb.pos = vec3(0.5, -0.5, 0.5);
-    rdb.rgb = vec3(1.0, 1.0, 0.0);
-
-    mrn::Vertex rub;
-    rub.pos = vec3(0.5, 0.5, 0.5);
-    rub.rgb = vec3(1.0, 1.0, 1.0);
-
-    cube_data.addVertex(ldf);
-    cube_data.addVertex(luf);
-    cube_data.addVertex(rdf);
-    cube_data.addVertex(ruf);
-    cube_data.addVertex(ldb);
-    cube_data.addVertex(lub);
-    cube_data.addVertex(rdb);
-    cube_data.addVertex(rub);
-
-    // Front
-    cube_data.addTriangleIndices(0, 1, 2);
-    cube_data.addTriangleIndices(1, 2, 3);
-    // Left
-    cube_data.addTriangleIndices(0, 2, 4);
-    cube_data.addTriangleIndices(2, 4, 6);
-    // Right
-    cube_data.addTriangleIndices(1, 3, 5);
-    cube_data.addTriangleIndices(3, 5, 7);
-    // Down
-    cube_data.addTriangleIndices(0, 1, 4);
-    cube_data.addTriangleIndices(1, 4, 5);
-    // Up
-    cube_data.addTriangleIndices(2, 3, 6);
-    cube_data.addTriangleIndices(3, 6, 7);
-    // Back
-    cube_data.addTriangleIndices(4, 5, 6);
-    cube_data.addTriangleIndices(5, 6, 7);
+    mrn::Mesh* cube_data = mrn::Primitive::createCube();
+    mrn::Mesh* pyramid_data = mrn::Primitive::createPyramid();
 
 
     GLFWwindow* window = initWindow("OpenGL-Sandbox", 800, 600);
@@ -137,49 +124,56 @@ int main() {
     glPointSize(5);
     glEnable(GL_DEPTH_TEST);
 
-    GLuint cube_vertex_arrayinfo;
-    GLuint cube_index_buffer;
-    glGenVertexArrays(1, &cube_vertex_arrayinfo);
-    glGenBuffers(1, &cube_index_buffer);
 
-    glBindVertexArray(cube_vertex_arrayinfo);
-    cube_data.initBuf();
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(0);
-    glEnableVertexAttribArray(1);
+    cube_data->initBuf();
+    pyramid_data->initBuf();
 
-    mrn::Shader* cube_shader = new mrn::Shader("shader/rotate.vert", "shader/default.frag");
+
+    mrn::Shader* default_shader = new mrn::Shader("shader/rotate.vert", "shader/default.frag");
 
     mrn::Model c1 = mrn::Model();
-    c1.data = &cube_data;
-    c1.shader = cube_shader;
+    c1.mesh = cube_data;
+    c1.mesh->initBuf();
+    c1.translate(0.0f, 0.f, -5.f);
 
     mrn::Model c2 = mrn::Model();
-    c2.data = &cube_data;
-    c2.shader = cube_shader;
+    c2.mesh = cube_data;
+    c2.mesh->initBuf();
+    c2.translate(-1.0f, -1.5f, -6.f);
+
+    mrn::Model c3 = mrn::Model();
+    c3.mesh = pyramid_data;
+    c3.mesh->initBuf();
+    c3.translate(1.0f, 1.0f, -8.0f);
 
 
-    GLint proj_loc = glGetUniformLocation(cube_shader->id, "projection");
-    cube_shader->use();
+    c1.attachShader(default_shader);
+    c2.attachShader(default_shader);
+    c3.attachShader(default_shader);
+
+    mrn::Scene scene;
+    // ------------
+    // camera setup
+    // ------------
+    scene.cam.setFov(45.0f);
+    scene.cam.setPos(0.0, 0.0, 3.0);
+    scene.cam.lookAt(0.0, 0.0, 0.0);
+    scene.objects.push_back(c1);
+    scene.objects.push_back(c2);
+    scene.objects.push_back(c3);
+
+    GLint proj_loc = glGetUniformLocation(default_shader->id, "projection");
+    default_shader->use();
 
     glUniformMatrix4fv(proj_loc, 1, GL_FALSE, value_ptr(proj));
-
+    scene.cam.setPos(0, 0, 3);
     while(!glfwWindowShouldClose(window)) {
-        // input
-          // -----
-        processInput(window);
-        // render
-        // ------
-
         clear();
 
-        c1.translate(vec3(3.0f, 3.f, -10.f));
-        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 
-        c2.translate(vec3(-1.0f, -1.5f, -6.f));
-        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+        processInput(window, &scene);
 
+        scene.render();
 
         // glfw: poll events & swap buffers
         // --------------------------------
@@ -192,6 +186,6 @@ int main() {
 }
 
 void clear() {
-    glClearColor(0.2f, 0.3f, 0.4f, 1.0f);
+    glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }

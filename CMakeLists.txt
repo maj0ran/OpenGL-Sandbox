@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(SOURCES main.cpp
         include/glad/glad.c
         mrn/Shader.cpp mrn/Shader.h include/stb/stb_image.h
-        glm/glm/glm.hpp mrn/Vertex.h mrn/Polygon.cpp mrn/Polygon.h mrn/Model.cpp mrn/Model.h)
+        glm/glm/glm.hpp mrn/Vertex.h mrn/Mesh.cpp mrn/Mesh.h mrn/Model.cpp mrn/Model.h mrn/Camera.cpp mrn/Camera.h mrn/Scene.cpp mrn/Scene.h mrn/Primitives.cpp mrn/Primitives.h)
 
 add_executable(OpenGLSandbox ${SOURCES})
 
