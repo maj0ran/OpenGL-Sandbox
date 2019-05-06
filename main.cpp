@@ -19,6 +19,7 @@
 #include "mrn/Camera.h"
 #include "mrn/Scene.h"
 #include "mrn/Primitives.h"
+#include "mrn/FontRenderer.h"
 
 void clear();
 using namespace glm;
@@ -164,7 +165,9 @@ int main() {
 
     GLint proj_loc = glGetUniformLocation(default_shader->id, "projection");
     default_shader->use();
-
+    mrn::FontRenderer* fr = new mrn::FontRenderer();
+    fr->setFont("fonts/arial.ttf");
+    fr->setFontSize(16);
     glUniformMatrix4fv(proj_loc, 1, GL_FALSE, value_ptr(proj));
     scene.cam.setPos(0, 0, 3);
     while(!glfwWindowShouldClose(window)) {
@@ -173,8 +176,8 @@ int main() {
 
         processInput(window, &scene);
 
+        fr->renderText("Blablabla", 0, 0, vec3(1, 0, 0));
         scene.render();
-
         // glfw: poll events & swap buffers
         // --------------------------------
         glfwSwapBuffers(window);
