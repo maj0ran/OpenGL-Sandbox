@@ -5,7 +5,7 @@
 #ifndef OPENGL_SANDBOX_CAMERA_H
 #define OPENGL_SANDBOX_CAMERA_H
 
-#include "../glm/glm/glm.hpp"
+#include <glm.hpp>
 #include "../include/glad/glad.h"
 
 using namespace glm;

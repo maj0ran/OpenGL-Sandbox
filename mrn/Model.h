@@ -5,7 +5,7 @@
 #ifndef OPENGL_SANDBOX_MODEL_H
 #define OPENGL_SANDBOX_MODEL_H
 
-#include "../glm/glm/glm.hpp"
+#include <glm.hpp>
 #include "Mesh.h"
 #include "Shader.h"
 

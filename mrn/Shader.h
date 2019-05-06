@@ -6,9 +6,9 @@
 #define OPENGL_SANDBOX_SHADER_H
 
 #include "../include/glad/glad.h"
-#include "../glm/glm/glm.hpp"
-#include "../glm/glm/gtc/matrix_transform.hpp"
-#include "../glm/glm/gtc/type_ptr.hpp"
+#include <glm.hpp>
+#include <gtc/matrix_transform.hpp>
+#include <gtc/type_ptr.hpp>
 
 using namespace glm;
 

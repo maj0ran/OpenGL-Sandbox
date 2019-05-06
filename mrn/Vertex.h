@@ -6,8 +6,8 @@
 #define OPENGL_SANDBOX_VERTEX_H
 
 #include <stddef.h>
-#include "../glm/glm/glm.hpp"
-#include "../glm/glm/gtc/type_ptr.hpp"
+#include <glm.hpp>
+#include <gtc/type_ptr.hpp>
 
 using namespace glm;
 

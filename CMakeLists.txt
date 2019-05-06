@@ -3,15 +3,38 @@ project(OpenGL-Sandbox)
 
 set(CMAKE_CXX_STANDARD 17)
 
+
+
+
+# GLFW
+add_subdirectory(3rdparty/glfw-3.3)
+
+include_directories(3rdparty/glfw-3.3/include/GLFW)
+
+# GLM
+# GLM is header-only so no compiling needed
+include_directories(3rdparty/glm/glm)
+
+# GLAD
+include_directories(3rdparty/glad/include)
+
+#stb_image
+include_directories(3rdparty/stb)
+
 set(SOURCES main.cpp
-        include/glad/glad.c
-        mrn/Shader.cpp mrn/Shader.h include/stb/stb_image.h
-        glm/glm/glm.hpp mrn/Vertex.h mrn/Mesh.cpp mrn/Mesh.h mrn/Model.cpp mrn/Model.h mrn/Camera.cpp mrn/Camera.h mrn/Scene.cpp mrn/Scene.h mrn/Primitives.cpp mrn/Primitives.h)
+        3rdparty/glad/src/glad.c
+        mrn/Shader.cpp mrn/Shader.h
+        mrn/Vertex.h
+        mrn/Mesh.cpp
+        mrn/Mesh.h
+        mrn/Model.cpp
+        mrn/Model.h
+        mrn/Camera.cpp mrn/Camera.h
+        mrn/Scene.cpp mrn/Scene.h
+        mrn/Primitives.cpp mrn/Primitives.h)
 
 add_executable(OpenGLSandbox ${SOURCES})
-
-find_library(GLFW NAMES libglfw3 PATHS lib)
-target_link_libraries(OpenGLSandbox ${GLFW})
+target_link_libraries(OpenGLSandbox glfw)
 
 add_custom_command(TARGET OpenGLSandbox PRE_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/shader $<TARGET_FILE_DIR:OpenGLSandbox>/shader)
 add_custom_command(TARGET OpenGLSandbox PRE_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/textures $<TARGET_FILE_DIR:OpenGLSandbox>/textures)

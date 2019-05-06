@@ -1,16 +1,16 @@
 #include <iostream>
 #include <cmath>
-#include "include/glad/glad.h"
-#include "include/GLFW/glfw3.h"
+#include <glad/glad.h>
+#include <glfw3.h>
 
 
 #define STB_IMAGE_IMPLEMENTATION
-#include "include/stb/stb_image.h"
+#include <stb_image.h>
 
 /* ---- GLM ---- */
-#include "glm/glm/glm.hpp"
-#include "glm/glm/gtc/matrix_transform.hpp"
-#include "glm/glm/gtc/type_ptr.hpp"
+#include <glm.hpp>
+#include <gtc/matrix_transform.hpp>
+#include <gtc/type_ptr.hpp>
 
 /* ---- own header ---- */
 #include "mrn/Shader.h"

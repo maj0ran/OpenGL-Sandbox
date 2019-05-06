@@ -10,6 +10,8 @@
 #include "Vertex.h"
 #include "../include/glad/glad.h"
 
+#include <gtc/type_precision.hpp>
+
 
 namespace mrn {
 
