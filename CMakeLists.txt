@@ -32,10 +32,10 @@ set(SOURCES main.cpp
         mrn/Mesh.h
         mrn/Model.cpp
         mrn/Model.h
-        mrn/Camera.cpp mrn/Camera.h
+        mrn/camera/Camera.cpp mrn/camera/Camera.h
         mrn/Scene.cpp mrn/Scene.h
         mrn/Primitives.cpp mrn/Primitives.h
-        mrn/FontRenderer.cpp mrn/FontRenderer.h)
+        mrn/FontRenderer.cpp mrn/FontRenderer.h mrn/base/common.h mrn/base/EventBus.cpp mrn/base/EventBus.h mrn/base/BusMember.cpp mrn/base/BusMember.h)
 
 add_executable(OpenGLSandbox ${SOURCES})
 target_link_libraries(OpenGLSandbox glfw freetype)

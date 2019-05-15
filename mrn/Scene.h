@@ -6,7 +6,7 @@
 #define OPENGL_SANDBOX_WORLD_H
 
 
-#include "Camera.h"
+#include "camera/Camera.h"
 #include "Model.h"
 
 namespace mrn {

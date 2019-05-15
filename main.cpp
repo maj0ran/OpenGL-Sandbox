@@ -16,10 +16,13 @@
 #include "mrn/Shader.h"
 #include "mrn/Mesh.h"
 #include "mrn/Model.h"
-#include "mrn/Camera.h"
+#include "mrn/camera/Camera.h"
 #include "mrn/Scene.h"
 #include "mrn/Primitives.h"
 #include "mrn/FontRenderer.h"
+
+
+
 
 void clear();
 using namespace glm;
@@ -34,7 +37,6 @@ int loadTexture() {
     glBindTexture(GL_TEXTURE_2D, texture);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
     glGenerateMipmap(GL_TEXTURE_2D);
-
     return texture;
 }
 
@@ -62,25 +64,25 @@ void processInput(GLFWwindow *window, mrn::Scene* scene) {
     if(glfwGetKey(window, GLFW_KEY_W)) {
         vec3 camPos = scene->cam.getPos();
         camPos.z = camPos.z - 0.1f;
-        scene->cam.setPos(camPos.x, camPos.y, camPos.z);
+        scene->cam.setPos(camPos);
     }
 
     if(glfwGetKey(window, GLFW_KEY_A)) {
         vec3 camPos = scene->cam.getPos();
         camPos.x = camPos.x - 0.1f;
-        scene->cam.setPos(camPos.x, camPos.y, camPos.z);
+        scene->cam.setPos(camPos);
     }
 
     if(glfwGetKey(window, GLFW_KEY_S)) {
         vec3 camPos = scene->cam.getPos();
         camPos.z = camPos.z + 0.1f;
-        scene->cam.setPos(camPos.x, camPos.y, camPos.z);
+        scene->cam.setPos(camPos);
     }
 
     if(glfwGetKey(window, GLFW_KEY_D)) {
         vec3 camPos = scene->cam.getPos();
         camPos.x = camPos.x + 0.1f;
-        scene->cam.setPos(camPos.x, camPos.y, camPos.z);
+        scene->cam.setPos(camPos);
     }
 }
 
@@ -152,13 +154,11 @@ int main() {
     c2.attachShader(default_shader);
     c3.attachShader(default_shader);
 
-    mrn::Scene scene;
+    mrn::Scene scene = mrn::Scene();
     // ------------
     // camera setup
     // ------------
     scene.cam.setFov(45.0f);
-    scene.cam.setPos(0.0, 0.0, 3.0);
-    scene.cam.lookAt(0.0, 0.0, 0.0);
     scene.objects.push_back(c1);
     scene.objects.push_back(c2);
     scene.objects.push_back(c3);
@@ -169,7 +169,6 @@ int main() {
     fr->setFont("fonts/arial.ttf");
     fr->setFontSize(16);
     glUniformMatrix4fv(proj_loc, 1, GL_FALSE, value_ptr(proj));
-    scene.cam.setPos(0, 0, 3);
     while(!glfwWindowShouldClose(window)) {
         clear();
 

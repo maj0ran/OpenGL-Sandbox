@@ -6,8 +6,8 @@
 
 namespace mrn {
 
-    Scene::Scene() {
-        cam = Camera();
+    Scene::Scene() :
+        cam(Camera(vec3(0.0, 0.0, 3.0), vec3(0.0, 0.0, -1.0))) {
         objects = std::vector<Model>();
     }
 

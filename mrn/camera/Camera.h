@@ -6,14 +6,14 @@
 #define OPENGL_SANDBOX_CAMERA_H
 
 #include <glm.hpp>
-#include "../include/glad/glad.h"
+#include "glad/glad.h"
 
 using namespace glm;
 
 namespace mrn {
     class Camera {
     public:
-        Camera();
+        Camera(vec3 pos, vec3 front);
         ~Camera();
 
         // The name direction vector is not the best chosen name,
@@ -24,15 +24,14 @@ namespace mrn {
         vec3 right;
         vec3 up;
 
-        mat4 view;
         GLint view_mat_shader_location;
 
-
+        mat4 view;
         mat4 projection;
         GLint projection_mat_shader_location;
 
-        void lookAt(float x, float y, float z);
-        void setPos(float x, float y, float z);
+        void lookAt(vec3 target);
+        void setPos(vec3 pos);
         vec3 getPos();
 
         void setFov(float fov);
@@ -42,6 +41,8 @@ namespace mrn {
         float fov;
         vec3 pos;
         vec3 target;
+
+        vec3 worldUp = vec3(0.0f, 1.0f, 0.0f);
 
         void calcProjectionMat();
 
